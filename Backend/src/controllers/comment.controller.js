@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
-import { Comment } from "../models/comments.model.js"
-import { ApiErrors } from "../utils/ApiErrors.js"
+import { Comment } from "../models/comment.model.js"
+import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { Video } from "../models/video.model.js"
@@ -15,7 +15,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
         sortType = "desc",
     } = req.query;
     if (!videoId) {
-        throw new ApiErrors(404, "Video not found");
+        throw new ApiError(404, "Video not found");
     }
     let filter = { video: videoId };
     if (query) {
@@ -53,7 +53,7 @@ const addComment = asyncHandler(async (req, res) => {
     const { content } = req.body
     const findVideo = await Video.findById(videoId);
     if (!findVideo) {
-        throw new ApiErrors(404, "Video with the Id do not exists");
+        throw new ApiError(404, "Video with the Id do not exists");
     }
     const comment = await Comment.create({
         video: videoId,
@@ -82,7 +82,7 @@ const deleteComment = asyncHandler(async (req, res) => {
     const { commentId } = req.params
     const commentResponse = await Comment.findById(commentId);
     if (!commentResponse) {
-        throw new ApiErrors(401, "Commnet not found");
+        throw new ApiError(401, "Commnet not found");
     }
     await Comment.findByIdAndDelete(commentId);
     return res.status(200).json(new ApiResponse({ message: "Coment deleted successfully", data: {} }))

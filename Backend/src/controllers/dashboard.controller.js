@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
 import { Video } from "../models/video.model.js";
-import { Subscription } from "../models/sunbcriptions.model.js";
-import { Like } from "../models/likes.model.js";
-import { ApiErrors } from "../utils/ApiErrors.js";
+import { Subscription } from "../models/subscription.model.js";
+import { Like } from "../models/like.model.js";
+import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const getChannelStats = asyncHandler(async (req, res) => {
     const userId = req.user?._id;
     if (!userId) {
-        throw new ApiErrors(401, "Unauthorized access");
+        throw new ApiError(401, "Unauthorized access");
     }
 
     // Aggregate total views & total videos
@@ -49,7 +49,7 @@ const getChannelStats = asyncHandler(async (req, res) => {
 const getChannelVideos = asyncHandler(async (req, res) => {
     const userId = req.user?._id;
     if (!userId) {
-        throw new ApiErrors(401, "Unauthorized access");
+        throw new ApiError(401, "Unauthorized access");
     }
 
     const getAllVideos = await Video.find({ owner: userId });
