@@ -1,5 +1,4 @@
 import { Router } from "express";
-refreshAccessToken
 import {
     loginUser,
     logoutUser,
@@ -14,8 +13,6 @@ import {
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import pkg from "jsonwebtoken";
-const { verify } = pkg;
 
 const router = Router()
 
@@ -49,4 +46,3 @@ router.route("/c/:username").get(verifyJWT, getUserChannelProfile)
 router.route("/history").get(verifyJWT, getWatchHistory)
 
 export default router
-

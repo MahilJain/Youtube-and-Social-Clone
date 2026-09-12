@@ -32,6 +32,12 @@ const toggleSubscription = asyncHandler(async (req, res) => {
     if (!isValidObjectId(channelId)) {
         throw new ApiError(400, "Invalid Channel ID");
     }
+    if (channelId.toString() === userId.toString()) {
+        throw new ApiError(400, "You cannot subscribe to your own channel")
+    }
+    if (!(await User.exists({ _id: channelId }))) {
+        throw new ApiError(404, "Channel not found")
+    }
 
     // Check if subscription already exists for this user and channel
     const subscriptionInstance = await Subscription.findOne({
@@ -74,10 +80,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     // Get current user ID from authenticated session
     const userId = req.user?._id;
 
-    // Verify user is authenticated
-    if (!userId) {
-        throw new ApiError(400, "Please login to view subscribers")
-    }
+    if (!isValidObjectId(channelId)) throw new ApiError(400, "Invalid Channel ID")
 
     // Use aggregation pipeline to fetch and format subscriber data
     const subscribers = await Subscription.aggregate([
@@ -91,7 +94,10 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
                 from: "users",
                 localField: "subscriber",
                 foreignField: "_id",
-                as: "subscriberDetails"
+                as: "subscriberDetails",
+                pipeline: [
+                    { $project: { _id: 1, username: 1, fullName: 1, avatar: 1, coverImage: 1 } }
+                ]
             }
         },
         // Step 3: Project only the subscriber details (remove subscription metadata)
@@ -118,7 +124,7 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
     // Extract subscriber ID from URL parameters
     const { subscriberId } = req.params
 
-    // Use aggregation pipeline to fetch and format channel data
+    if (!isValidObjectId(subscriberId)) throw new ApiError(400, "Invalid subscriber ID")
     const subscribedTo = await Subscription.aggregate([
         // Step 1: Match subscriptions where the subscriber matches the given subscriberId
         {
@@ -130,7 +136,10 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
                 from: "users",
                 localField: "channel",
                 foreignField: "_id",
-                as: "channelDetails"
+                as: "channelDetails",
+                pipeline: [
+                    { $project: { _id: 1, username: 1, fullName: 1, avatar: 1, coverImage: 1 } }
+                ]
             }
         },
         // Step 3: Flatten the array (converts array of size 1 to single object)
