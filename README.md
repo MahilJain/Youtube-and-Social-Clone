@@ -1,4 +1,4 @@
-# Streamline — Video Sharing Platform
+#Video Sharing Platform
 
 Streamline is a full-stack video-sharing application inspired by familiar
 creator and video platforms. The backend provides the core API and MongoDB
