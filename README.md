@@ -1,6 +1,6 @@
 #Video Sharing Platform
 
-Streamline is a full-stack video-sharing application inspired by familiar
+It is a full-stack video-sharing application inspired by familiar
 creator and video platforms. The backend provides the core API and MongoDB
 domain model for users, videos, comments, likes, subscriptions, playlists,
 tweets, and channel analytics. The frontend is an intentionally simple,
